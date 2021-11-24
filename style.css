@@ -105,10 +105,9 @@ video {
 
 .progress-bar {
   background: var(--primary-color);
-  width: 50%;
   height: 100%;
   border-radius: 10px;
-  transition: all 0.5s ease;
+  transition: all .55s ease;
 }
 
 /* Left Controls -------------------------- */
