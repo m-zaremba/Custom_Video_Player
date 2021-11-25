@@ -61,12 +61,12 @@ video {
   display: flex;
   justify-content: space-between;
   opacity: 0;
-  transition: all .5s ease-out 1s;
+  transition: all 0.5s ease-out 1s;
 }
 
 .show-controls:hover .controls-container {
   opacity: 1;
-  transition: all .2s ease-out;
+  transition: all 0.2s ease-out;
 }
 
 .control-group {
@@ -89,14 +89,14 @@ video {
 .progress-range {
   height: 8px;
   width: calc(100% - 30px);
-  background: rgba(202, 202, 202, .5);
+  background: rgba(202, 202, 202, 0.5);
   margin: auto;
   border-radius: 10px;
   position: absolute;
   left: 15px;
   top: 15px;
   cursor: pointer;
-  transition: height .1s ease-in-out;
+  transition: height 0.1s ease-in-out;
 }
 
 .progress-range:hover {
@@ -107,7 +107,7 @@ video {
   background: var(--primary-color);
   height: 100%;
   border-radius: 10px;
-  transition: all .55s ease;
+  transition: all 0.55s ease;
 }
 
 /* Left Controls -------------------------- */
@@ -219,7 +219,14 @@ select > option {
 
 /* Media Query: Large Smartphone (Vertical) */
 @media screen and (max-width: 600px) {
+  .player {
+    min-width: 0;
+    max-width: 95vw;
+  }
 
+  video {
+    object-fit: cover;
+  }
 
   .fas {
     font-size: 20px;
@@ -266,20 +273,13 @@ select > option {
 }
 
 /* Media Query: Large Smartphone (Horizontal) */
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 900px) and (max-height: 500px) {
   .player {
-    min-width: 0;
-    max-width: 95vw;
+    max-height: 95vh;
+    max-width: auto;
   }
 
   video {
-    object-fit: cover;
-  }
-
-  .video-fullscreen {
-    height: 97.5vh;
-    border-radius: 0;
+    height: 95vh;
   }
 }
-
-

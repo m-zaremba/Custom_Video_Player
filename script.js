@@ -1,4 +1,5 @@
 window.addEventListener("DOMContentLoaded", () => {
+  const player = document.querySelector(".player");
   const video = document.querySelector("video");
   const progressRange = document.querySelector(".progress-range");
   const progressBar = document.querySelector(".progress-bar");
@@ -9,14 +10,14 @@ window.addEventListener("DOMContentLoaded", () => {
   const currentTime = document.querySelector(".time-elapsed");
   const duration = document.querySelector(".time-duration");
   const fullscreenBtn = document.querySelector(".fullscreen");
+  const speedSelector = document.querySelector(".player-speed");
+
+  let lastVolume = 1;
+  let fullscreen = false;
 
   const showPlayIcon = (showPlay) => {
-    showPlay
-      ? playBtn.classList.replace("fa-pause", "fa-play")
-      : playBtn.classList.replace("fa-play", "fa-pause");
-    showPlay
-      ? playBtn.setAttribute("title", "Play")
-      : playBtn.setAttribute("title", "Pause");
+    showPlay ? playBtn.classList.replace("fa-pause", "fa-play") : playBtn.classList.replace("fa-play", "fa-pause");
+    showPlay ? playBtn.setAttribute("title", "Play") : playBtn.setAttribute("title", "Pause");
   };
 
   const togglePlay = () => {
@@ -50,21 +51,8 @@ window.addEventListener("DOMContentLoaded", () => {
     video.currentTime = newTime * video.duration;
   };
 
-  let lastVolume = 1;
-
-  const changeVolume = (event) => {
-    let volume = event.offsetX / volumeRange.offsetWidth;
-    if (volume < 0.1) {
-      volume = 0;
-    }
-    if (volume > 0.9) {
-      volume = 1;
-    }
-    volumeBar.style.width = `${volume * 100}%`;
-    video.volume = volume;
-
-    volumeIcon.className = "";
-
+  const setVolumeIcon = (volume) => {
+    volumeIcon.className = ""; //clear class name before applying a new class
     if (volume > 0.5) {
       volumeIcon.classList.add("fas", "fa-volume-up");
     } else if (volume < 0.5 && volume > 0) {
@@ -72,25 +60,75 @@ window.addEventListener("DOMContentLoaded", () => {
     } else if (volume === 0) {
       volumeIcon.classList.add("fas", "fa-volume-off");
     }
-    lastVolume = volume;
+  }
+
+  const changeVolume = (event) => {
+    let volume = event.offsetX / volumeRange.offsetWidth;
+    volume < 0.1 && (volume = 0);
+    volume > 0.9 && (volume = 1);
+    
+    volumeBar.style.width = `${volume * 100}%`;
+    video.volume = volume;
+    lastVolume = volume; //set volume level 'cache' for toggleMute function 
+
+    setVolumeIcon(volume);
   };
 
-  const toggleMute = () => {
+  const setMuteIcon = () => {
     volumeIcon.className = "";
+    volumeIcon.classList.add("fas", "fa-volume-mute");
+    volumeIcon.setAttribute("title", "Unmute");
+  }
+
+  const toggleMute = () => {
     if (video.volume) {
       lastVolume = video.volume;
       video.volume = 0;
       volumeBar.style.width = 0;
-      volumeIcon.classList.add("fas", "fa-volume-mute");
-      volumeIcon.setAttribute("title", "Unmute");
+      setMuteIcon();
     } else {
       video.volume = lastVolume;
       volumeBar.style.width = `${lastVolume * 100}%`;
-      lastVolume > 0.5
-        ? volumeIcon.classList.add("fas", "fa-volume-up")
-        : volumeIcon.classList.add("fas", "fa-volume-down");
+      setVolumeIcon(lastVolume);
       volumeIcon.setAttribute("title", "Mute");
     }
+  };
+
+  const changeSpeed = () => {
+    video.playbackRate = speedSelector.value;
+  };
+
+  // View video in fullscreen
+  const openFullscreen = (elem) => {
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) {
+      /* Safari */
+      elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) {
+      /* IE11 */
+      elem.msRequestFullscreen();
+    }
+    video.classList.add("video-fullscreen");
+  };
+
+  // Close fullscreen mode
+  const closeFullscreen = () => {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+      /* Safari */
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) {
+      /* IE11 */
+      document.msExitFullscreen();
+    }
+    video.classList.remove("video-fullscreen");
+  };
+
+  const toggleFullscreen = () => {
+    !fullscreen ? openFullscreen(player) : closeFullscreen();
+    fullscreen = !fullscreen;
   };
 
   playBtn.addEventListener("click", togglePlay);
@@ -101,4 +139,6 @@ window.addEventListener("DOMContentLoaded", () => {
   progressRange.addEventListener("click", setProgress);
   volumeRange.addEventListener("click", changeVolume);
   volumeIcon.addEventListener("click", toggleMute);
+  speedSelector.addEventListener("change", changeSpeed);
+  fullscreenBtn.addEventListener("click", toggleFullscreen);
 });
